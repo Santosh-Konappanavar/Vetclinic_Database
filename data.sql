@@ -45,3 +45,40 @@ SET owner_id = (SELECT id FROM owners WHERE full_name =
                     WHEN name IN ('Charmander', 'Squirtle', 'Blossom') THEN 'Melody Pond'
                     WHEN name IN ('Angemon', 'Boarmon') THEN 'Dean Winchester'
                 END);
+
+INSERT INTO vets (name, age, date_of_graduation)
+VALUES
+('William Tatcher', 45, DATE'04/23/2000'),
+('Maisy Smith', 26, DATE'01/17/2019'),
+('Stephanie Mendez', 64, DATE'05/04/1981'),
+('Jack Harkness', 38, DATE'06/08/2008');
+
+INSERT INTO specializations (vet_id, species_id)
+VALUES
+(1, 1),
+(3, 1),
+(3, 2),
+(4, 2);
+
+INSERT INTO visits (animal_id, vet_id, visit_date)
+VALUES
+(1, 1, DATE'05/24/2020'),
+(1, 3, DATE'07/22/2020'),
+(2, 4, DATE'02/02/2021'),
+(3, 2, DATE'01/05/2020'),
+(3, 2, DATE'03/08/2020'),
+(3, 2, DATE'05/14/2020'),
+(4, 3, DATE'05/04/2021'),
+(5, 4, DATE'02/24/2021'),
+(6, 2, DATE'12/21/2019'),
+(6, 1, DATE'08/10/2020'),
+(6, 2, DATE'04/07/2021'),
+(7, 3, DATE'09/29/2019'),
+(8, 4, DATE'10/03/2020'),
+(8, 4, DATE'11/04/2020'),
+(9, 2, DATE'01/24/2019'),
+(9, 2, DATE'05/15/2019'),
+(9, 2, DATE'02/27/2020'),
+(9, 2, DATE'08/03/2020'),
+(10, 3, DATE'05/24/2020'),
+(10, 1, DATE'01/11/2021');
