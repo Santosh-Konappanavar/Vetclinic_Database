@@ -142,3 +142,69 @@ JOIN owners o ON a.owner_id = o.id
 GROUP BY o.full_name
 ORDER BY animal_count DESC
 LIMIT 1;
+
+-- joint table
+
+SELECT *
+FROM animals a
+INNER JOIN visits v ON a.id = v.animal_id
+INNER JOIN vets vt ON vt.id = v.vet_id
+WHERE vt.name = 'William Tatcher'
+ORDER BY v.visit_date DESC
+LIMIT 1;
+
+SELECT COUNT(DISTINCT v.animal_id) AS animal_count
+FROM visits v
+INNER JOIN vets vt ON vt.id = v.vet_id
+WHERE vt.name = 'Stephanie Mendez';
+
+SELECT  vt.name, s.name AS specialty 
+FROM vets vt
+LEFT JOIN specializations sp ON vt.id = sp.vet_id
+LEFT JOIN species s ON sp.species_id = s.id;
+
+SELECT *
+FROM animals a
+INNER JOIN visits v ON a.id = v.animal_id
+INNER JOIN vets vt ON vt.id = v.vet_id
+WHERE vt.name = 'Stephanie Mendez'
+    AND v.visit_date BETWEEN DATE'2020-04-01' AND DATE'2020-08-30';
+
+SELECT a.name, COUNT(v.animal_id) AS visit_count
+FROM animals a
+INNER JOIN visits v ON a.id = v.animal_id
+GROUP BY a.id
+ORDER BY visit_count DESC
+LIMIT 1;
+
+SELECT vets.name AS VET_NAME, animals.name AS FIRST_VISITED_ANIMAL_NAME
+FROM vets, animals, visits
+WHERE vets.name = 'Maisy Smith'
+AND vets.id = visits.vet_id
+AND animals.id = visits.animal_id
+ORDER BY visits.visit_date ASC LIMIT 1;
+
+SELECT a.name AS animal_name, vt.name AS vet_name, v.visit_date
+FROM visits v
+INNER JOIN vets vt ON vt.id = v.vet_id
+INNER JOIN animals a ON a.id = v.animal_id
+ORDER BY v.visit_date DESC
+LIMIT 1;
+
+SELECT v.name AS vet_name, COUNT(*) AS amount_of_visits
+FROM vets v
+JOIN visits vs ON v.id = vs.vet_id
+JOIN animals a ON vs.animal_id = a.id
+LEFT JOIN specializations s ON v.id = s.vet_id AND a.species_id = s.species_id
+WHERE s.vet_id IS NULL
+GROUP BY v.name;
+
+WITH new AS(
+    SELECT DISTINCT(animals.name) animal, COUNT(animals.name) total_visits, vets.name vet
+FROM vets, animals, visits
+WHERE visits.animal_id = animals.id
+AND visits.vet_id = vets.id
+AND vets.name = 'Maisy Smith'
+GROUP BY animals.name, vet
+)
+SELECT * FROM new WHERE total_visits = (SELECT MAX(total_visits) FROM new);
