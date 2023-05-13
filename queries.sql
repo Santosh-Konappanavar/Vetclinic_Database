@@ -177,13 +177,12 @@ GROUP BY a.id
 ORDER BY visit_count DESC
 LIMIT 1;
 
-SELECT *
-FROM visits v
-INNER JOIN vets vt ON vt.id = v.vet_id
-INNER JOIN animals a ON a.id = v.animal_id
-WHERE a.name = 'Maisy Smith'
-ORDER BY v.visit_date ASC
-LIMIT 1;
+SELECT vets.name AS VET_NAME, animals.name AS FIRST_VISITED_ANIMAL_NAME
+FROM vets, animals, visits
+WHERE vets.name = 'Maisy Smith'
+AND vets.id = visits.vet_id
+AND animals.id = visits.animal_id
+ORDER BY visits.visit_date ASC LIMIT 1;
 
 SELECT a.name AS animal_name, vt.name AS vet_name, v.visit_date
 FROM visits v
@@ -192,19 +191,20 @@ INNER JOIN animals a ON a.id = v.animal_id
 ORDER BY v.visit_date DESC
 LIMIT 1;
 
-SELECT COUNT(*) AS visit_count
-FROM visits v
-INNER JOIN vets vt ON vt.id = v.vet_id
-INNER JOIN animals a ON a.id = v.animal_id
-LEFT JOIN specializations sp ON vt.id = sp.vet_id AND a.species_id = sp.species_id
-WHERE sp.vet_id IS NULL;
+SELECT v.name AS vet_name, COUNT(*) AS amount_of_visits
+FROM vets v
+JOIN visits vs ON v.id = vs.vet_id
+JOIN animals a ON vs.animal_id = a.id
+LEFT JOIN specializations s ON v.id = s.vet_id AND a.species_id = s.species_id
+WHERE s.vet_id IS NULL
+GROUP BY v.name;
 
-SELECT s.name AS specialty
-FROM visits v
-INNER JOIN animals a ON a.id = v.animal_id
-INNER JOIN specializations sp ON a.species_id = sp.species_id
-INNER JOIN species s ON s.id = sp.species_id
-WHERE a.name = 'Maisy Smith'
-GROUP BY s.name
-ORDER BY COUNT(*) DESC
-LIMIT 1;
+WITH new AS(
+    SELECT DISTINCT(animals.name) animal, COUNT(animals.name) total_visits, vets.name vet
+FROM vets, animals, visits
+WHERE visits.animal_id = animals.id
+AND visits.vet_id = vets.id
+AND vets.name = 'Maisy Smith'
+GROUP BY animals.name, vet
+)
+SELECT * FROM new WHERE total_visits = (SELECT MAX(total_visits) FROM new);
